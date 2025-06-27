@@ -1,6 +1,6 @@
 export const cardTemplate = document.querySelector('#card-template').content;
 
-// Попап открытия изображения
+
 
 export function createCard (cardObject, { cardRemove, openImage, cardLike }) {
    const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
@@ -20,11 +20,3 @@ export function createCard (cardObject, { cardRemove, openImage, cardLike }) {
 
    return cardElement;
 }
-
-
-
-
-
-
-
-

@@ -97,7 +97,7 @@ function handleAddNewCardSubmit(evt) {
  formElementCard.addEventListener('submit', handleAddNewCardSubmit);
 
 
-
+// Инициализация
 initialCards.forEach((item) => {
    const card = createCard(item, cardCallbacks);
    cardList.append(card);
