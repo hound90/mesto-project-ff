@@ -20,3 +20,13 @@ export function createCard (cardObject, { cardRemove, openImage, cardLike }) {
 
    return cardElement;
 }
+
+// Удаление карточки
+export function deleteCard(cardElement) {
+  cardElement.remove();
+}
+
+// Лайк для карточки
+export function handleCardLike(likeButton) {
+  likeButton.classList.toggle('card__like-button_is-active');
+}

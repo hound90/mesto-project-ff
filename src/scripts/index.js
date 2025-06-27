@@ -1,6 +1,6 @@
 import '../pages/index.css';
 import { initialCards } from '../components/cards.js';
-import { createCard } from '../components/card.js';
+import { createCard, deleteCard, handleCardLike } from '../components/card.js';
 import { openModal, closeModal, addPopupListener } from '../components/modal.js';
 
 
@@ -54,9 +54,6 @@ addPopupListener(popupNewCard);
 addPopupListener(popupImage);
 
 // Лайк для карточки
-function handleCardLike(likeButton) {
-  likeButton.classList.toggle('card__like-button_is-active');
-}
 
 // Открытие попапа карточки
 function handleOpenImage({ name, link }) {
@@ -67,9 +64,6 @@ function handleOpenImage({ name, link }) {
 }
 
 // Удаление карточки
-function deleteCard(cardElement) {
-  cardElement.remove();
-}
 
 // Редактирование профиля
 function handleFormSubmit(evt) {
