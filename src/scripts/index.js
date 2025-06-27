@@ -53,8 +53,6 @@ addPopupListener(popupEdit);
 addPopupListener(popupNewCard);
 addPopupListener(popupImage);
 
-// Лайк для карточки
-
 // Открытие попапа карточки
 function handleOpenImage({ name, link }) {
    zoomImage.src = link;
@@ -62,8 +60,6 @@ function handleOpenImage({ name, link }) {
    captionImage.textContent = name;
    openModal(popupImage);
 }
-
-// Удаление карточки
 
 // Редактирование профиля
 function handleFormSubmit(evt) {
