@@ -27,7 +27,7 @@ export const addPopupListener = (modal) => {
     closeModal(modal);
   });
 
-  modal.addEventListener('click', (evt) => {
+  modal.addEventListener('mousedown', (evt) => {
     if (evt.target === evt.currentTarget)
       closeModal(modal);
   });
