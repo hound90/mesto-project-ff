@@ -2,6 +2,7 @@ import '../pages/index.css';
 import { initialCards } from '../components/cards.js';
 import { createCard, deleteCard, handleCardLike } from '../components/card.js';
 import { openModal, closeModal, addPopupListener } from '../components/modal.js';
+import { enableValidation, clearValidation } from '../components/validate.js';
 
 
 const cardList = document.querySelector('.places__list');
@@ -13,10 +14,10 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
 // Форма попапа редактирования профиля
+
 const formElement = document.forms['edit-profile'];
 const nameInput = formElement.elements.name;
 const jobInput = formElement.elements.description;
-
 
 // Кнопка добавления и открытие попап изображения
 const addImageButton = document.querySelector('.profile__add-button');
@@ -30,6 +31,16 @@ const formElementCard = document.forms['new-place'];
 const cardNameInput = formElementCard.elements['place-name'];
 const cardLinkInput = formElementCard.elements.link;
 
+
+const validationConfig = {
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'button_disabled',
+  inputErrorClass: 'form__input_type_error',
+  errorClass: 'form__input-error_active'
+}
+
 // Коллбэки
 const cardCallbacks = {
    cardRemove: deleteCard,
@@ -41,10 +52,12 @@ const cardCallbacks = {
 editProfileButton.addEventListener('click', () => {
    nameInput.value = profileTitle.textContent;
    jobInput.value = profileDescription.textContent;
+   clearValidation(popupEdit, validationConfig);
    openModal(popupEdit);
 });
 // Открытие попапа изображений
 addImageButton.addEventListener('click', () => {
+   clearValidation(popupNewCard, validationConfig);
    openModal(popupNewCard);
 });
 
@@ -92,4 +105,8 @@ initialCards.forEach((item) => {
    const card = createCard(item, cardCallbacks);
    cardList.append(card);
 })
+
+
+
+enableValidation(validationConfig);
 
