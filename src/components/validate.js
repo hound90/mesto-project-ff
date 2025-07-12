@@ -1,9 +1,4 @@
 
-
-
-
-
-
 // Функция, которая добавляет класс с ошибкой
 const showInputError = (formElement, inputElement, errorMessage, selectors) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
@@ -63,10 +58,6 @@ function setEventListeners (formElement, selectors) {
 export function enableValidation (selectors) {
   const formList = Array.from(document.querySelectorAll(selectors.formSelector));
   formList.forEach((formElement) => {
-      formElement.addEventListener('submit', (evt) => {
-        evt.preventDefault();
-      });
-
         setEventListeners(formElement, selectors);
     });
 }
