@@ -71,7 +71,7 @@
         pattern="https?://.+\..+"
         data-error-message="Вставьте ссылку на изображение.">
         <span class="link-input-error form__input-error"></span>
-        <button type="submit" class="button popup__button">Сохранить</button>
+        <button type="submit" class="button popup__button">Создать</button>
       </form>
     </div>
   </div>
@@ -89,9 +89,11 @@
     <img class="card__image" src="" alt="" />
     <button type="button" class="card__delete-button"></button>
     <div class="card__description">
-      <h2 class="card__title">
-      </h2>
-      <button type="button" class="card__like-button"></button>
+      <h2 class="card__title"></h2>
+      <div class="card_like_container">
+        <button type="button" class="card__like-button"></button>
+        <span class="card_like_counter">0</span>
+      </div> 
     </div>
   </li>
 </template>

@@ -1,9 +1,8 @@
 import '../pages/index.css';
-
-import { createCard, deleteCard, handleCardLike } from '../components/card.js';
+import { createCard, deleteCard } from '../components/card.js';
 import { openModal, closeModal, addPopupListener } from '../components/modal.js';
 import { enableValidation, clearValidation } from '../components/validate.js';
-import { getUserProfile, getCards, editProfile, addCard } from '../components/api.js';
+import { getUserProfile, getCards, editProfile, addCard, toggleLike } from '../components/api.js';
 
 const cardList = document.querySelector('.places__list');
 
@@ -48,8 +47,12 @@ const validationConfig = {
 const cardCallbacks = {
    cardRemove: deleteCard,
    openImage: handleOpenImage,
-   cardLike: handleCardLike,
+   cardLike: handleLikeSubmit,
 };
+
+
+
+
 
 
 Promise.all([ getUserProfile(), getCards() ])
@@ -57,12 +60,10 @@ Promise.all([ getUserProfile(), getCards() ])
    profileTitle.textContent = user.name
    profileDescription.textContent = user.about
    profileImage.style['background-image'] = `url(${user.avatar})`
-   if (!Array.isArray(cards)) {
-      console.error(`${cards} не является массивом`);
-      return;
-   }
+   const userId = user._id;
+   
    cards.forEach((item) => {
-      const card = createCard(item, cardCallbacks);
+      const card = createCard( item, userId, cardCallbacks );
       cardList.append(card);
    })
    
@@ -139,6 +140,21 @@ function handleAddNewCardSubmit(evt) {
 }
  formElementCard.addEventListener('submit', handleAddNewCardSubmit);
 
+// Лайк для карточки
+function handleLikeSubmit (cardID, likeButton, likeCountElement) {
+  const isLiked = likeButton.classList.contains("card__like-button_is-active");
+  
+  toggleLike(cardID, isLiked)
+    .then((updatedCardData) => {
+      likeButton.classList.toggle("card__like-button_is-active", !isLiked);
+      if (likeCountElement) {
+        likeCountElement.textContent = updatedCardData.likes.length;
+      }
+    })
+    .catch((err) => {
+      console.error(`Ошибка при изменении лайка: ${err}`);
+    });
+};
 
 
 

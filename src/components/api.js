@@ -1,41 +1,46 @@
 const cohortId = 'wff-cohort-42';
 const apiToken = '6ac072b8-907a-4352-86ed-4f38c01485f9';
 const PATH = 'https://nomoreparties.co/v1/'
+const headers = {
+      authorization: apiToken,
+      "Content-Type": "application/json"
+    }
 
+//Преобразование и проверка на ошибку
 function checkResponse(res) {
   if (res.ok) {
     return res.json();
   }
-  return Promise.reject(`Что-то пошло не так: ${res.status}`);
+  return res.json()
+    .then(
+      (error) => {
+        error.httpStatusCode = res.status;
+        return Promise.reject(error);
+      }
+    );
 }
 
+//Получаем данные профиля
 export function getUserProfile() {
   return fetch(`${PATH}${cohortId}/users/me`, {
     method: "GET",
-    headers: {
-      authorization: apiToken,
-      "Content-Type": "application/json"
-    },
+    headers: headers,
   }).then(checkResponse);
 }
 
+//Получаем карточки
 export function getCards() {
   return fetch(`${PATH}${cohortId}/cards`, {
     method: "GET",
-    headers: {
-      authorization: apiToken,
-      "Content-Type": "application/json"
-    },
+    headers: headers,
   }).then(checkResponse);
 }
 
+//Отправляем запрос на изменения профиля по номеру ID
 export function editProfile(nameUser, aboutUser) {
   return fetch(`${PATH}${cohortId}/users/me`, {
     method: "PATCH",
-    headers: {
-      authorization: apiToken,
-      "Content-Type": "application/json"
-    },
+    headers: headers,
     body: JSON.stringify({
     name: nameUser,
     about: aboutUser
@@ -44,17 +49,41 @@ export function editProfile(nameUser, aboutUser) {
   }).then(checkResponse);
 }
 
+//Добавляем карточку 
 export function addCard(nameCard, linkCard) {
   return fetch(`${PATH}${cohortId}/cards`, {
     method: "POST",
-    headers: {
-      authorization: apiToken,
-      "Content-Type": "application/json"
-    },
+    headers: headers,
     body: JSON.stringify({
     name: nameCard,
     link: linkCard
   })
 
   }).then(checkResponse);
+}
+
+//Поставить лайк
+export function likeCard(cardID) {
+  return fetch(`${PATH}${cohortId}/cards/likes/${cardID} `, {
+    method: "PUT",
+    headers: headers,
+  }).then(checkResponse);
+}
+
+//Удалить лайк
+export function unLikeCard(cardID) {
+  return fetch(`${PATH}${cohortId}/cards/likes/${cardID} `, {
+    method: "DELETE",
+    headers: headers,
+  })
+}
+
+
+export function toggleLike (cardID, isLiked) {
+  const endpoint = `${PATH}${cohortId}/cards/likes/${cardID}`;
+  const fetchOptions = {
+    headers: headers,
+    method: isLiked ? 'DELETE' : 'PUT',
+  };
+  return fetch(endpoint, fetchOptions).then(checkResponse);
 }
