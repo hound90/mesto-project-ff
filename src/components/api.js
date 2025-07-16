@@ -28,6 +28,7 @@ export function getUserProfile() {
   }).then(checkResponse);
 }
 
+
 //Получаем карточки
 export function getCards() {
   return fetch(`${PATH}${cohortId}/cards`, {
@@ -62,23 +63,7 @@ export function addCard(nameCard, linkCard) {
   }).then(checkResponse);
 }
 
-//Поставить лайк
-export function likeCard(cardID) {
-  return fetch(`${PATH}${cohortId}/cards/likes/${cardID} `, {
-    method: "PUT",
-    headers: headers,
-  }).then(checkResponse);
-}
-
-//Удалить лайк
-export function unLikeCard(cardID) {
-  return fetch(`${PATH}${cohortId}/cards/likes/${cardID} `, {
-    method: "DELETE",
-    headers: headers,
-  })
-}
-
-
+//Поставить/удалить лайк
 export function toggleLike (cardID, isLiked) {
   const endpoint = `${PATH}${cohortId}/cards/likes/${cardID}`;
   const fetchOptions = {
@@ -86,4 +71,12 @@ export function toggleLike (cardID, isLiked) {
     method: isLiked ? 'DELETE' : 'PUT',
   };
   return fetch(endpoint, fetchOptions).then(checkResponse);
+}
+
+//Удаление карточки
+export function deleteCard(cardID) {
+  return fetch (`${PATH}${cohortId}/cards/${cardID}`, {
+    method: "DELETE",
+    headers: headers,
+  }).then(checkResponse);
 }

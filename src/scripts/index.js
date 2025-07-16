@@ -1,8 +1,8 @@
 import '../pages/index.css';
-import { createCard, deleteCard } from '../components/card.js';
+import { createCard } from '../components/card.js';
 import { openModal, closeModal, addPopupListener } from '../components/modal.js';
 import { enableValidation, clearValidation } from '../components/validate.js';
-import { getUserProfile, getCards, editProfile, addCard, toggleLike } from '../components/api.js';
+import { getUserProfile, getCards, editProfile, addCard, toggleLike, deleteCard } from '../components/api.js';
 
 const cardList = document.querySelector('.places__list');
 
@@ -26,7 +26,13 @@ const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupImage = document.querySelector('.popup_type_image');
 const zoomImage = popupImage.querySelector('.popup__image');
 const captionImage = popupImage.querySelector('.popup__caption');
-const editCardSubmit = popupNewCard .querySelector('.popup__button');
+const editCardSubmit = popupNewCard.querySelector('.popup__button');
+
+const popupConfirmationDelete = document.querySelector('.popup_confirmation_delete')
+const formConfirmation = document.forms.confirmation;
+const buttonDelete = document.querySelector('.card__delete-button');
+const buttonDeleteConfirmation = popupConfirmationDelete.querySelector('.popup__button');
+
 
 // Форма попапа добавления карточки
 const formElementCard = document.forms['new-place'];
@@ -43,16 +49,7 @@ const validationConfig = {
   errorClass: 'form__input-error_active'
 }
 
-// Коллбэки
-const cardCallbacks = {
-   cardRemove: deleteCard,
-   openImage: handleOpenImage,
-   cardLike: handleLikeSubmit,
-};
-
-
-
-
+let userId
 
 
 Promise.all([ getUserProfile(), getCards() ])
@@ -60,8 +57,7 @@ Promise.all([ getUserProfile(), getCards() ])
    profileTitle.textContent = user.name
    profileDescription.textContent = user.about
    profileImage.style['background-image'] = `url(${user.avatar})`
-   const userId = user._id;
-   
+   userId = user._id;
    cards.forEach((item) => {
       const card = createCard( item, userId, cardCallbacks );
       cardList.append(card);
@@ -96,10 +92,14 @@ addImageButton.addEventListener('click', () => {
    openModal(popupNewCard);
 });
 
+
+
+
 // Слушатели для всех попапов
 addPopupListener(popupEdit);
 addPopupListener(popupNewCard);
 addPopupListener(popupImage);
+addPopupListener(popupConfirmationDelete);
 
 // Открытие попапа карточки
 function handleOpenImage({ name, link }) {
@@ -124,13 +124,12 @@ function handleFormSubmit(evt) {
  formElement.addEventListener('submit', handleFormSubmit); 
 
 
-
 // Добавление новой карточки
 function handleAddNewCardSubmit(evt) {
    evt.preventDefault();
    renderLoading(true, editCardSubmit)
    addCard(cardNameInput.value, cardLinkInput.value).then((cardObject) => {
-      const cardElement = createCard(cardObject, cardCallbacks)
+      const cardElement = createCard(cardObject, userId, cardCallbacks)
       cardList.prepend(cardElement);
       formElementCard.reset();
       closeModal(popupNewCard);
@@ -156,9 +155,48 @@ function handleLikeSubmit (cardID, likeButton, likeCountElement) {
     });
 };
 
+//Удаление карточки через модальное окно
+let cardForDelete = {}
 
+const handleDeleteCard = (cardID, cardElement) => {
+  cardForDelete = {
+    id: cardID,
+    cardElement
+  }
+  
+  openModal(popupConfirmationDelete);
+};
 
+//Обработчик удаления
+const handleDeleteCardSubmit = (evt) => {
+  evt.preventDefault();
+  if (!cardForDelete.cardElement) return;
+  
+  renderLoading(true, buttonDeleteConfirmation);
+  
+  deleteCard(cardForDelete.id).then(() => {
+      cardForDelete.cardElement.remove();
+      closeModal(popupConfirmationDelete);
+      cardForDelete = {};
+    })
+    .catch((err) => {
+      console.error(`Ошибка при удалении карточки: ${err}`);
+    })
+    .finally(() => {
+      renderLoading(false, buttonDeleteConfirmation);
+    });
+};
+console.log(cardForDelete.id)
+formConfirmation.addEventListener('submit', handleDeleteCardSubmit);
 
 
 enableValidation(validationConfig);
+
+
+// Коллбэки
+const cardCallbacks = {
+   cardRemove: handleDeleteCard,
+   openImage: handleOpenImage,
+   cardLike: handleLikeSubmit,
+};
 
