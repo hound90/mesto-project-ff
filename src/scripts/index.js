@@ -2,7 +2,7 @@ import '../pages/index.css';
 import { createCard } from '../components/card.js';
 import { openModal, closeModal, addPopupListener } from '../components/modal.js';
 import { enableValidation, clearValidation } from '../components/validate.js';
-import { getUserProfile, getCards, editProfile, addCard, toggleLike, deleteCard } from '../components/api.js';
+import { getUserProfile, getCards, editProfile, addCard, toggleLike, deleteCard, updateAvatar } from '../components/api.js';
 
 const cardList = document.querySelector('.places__list');
 
@@ -27,10 +27,9 @@ const popupImage = document.querySelector('.popup_type_image');
 const zoomImage = popupImage.querySelector('.popup__image');
 const captionImage = popupImage.querySelector('.popup__caption');
 const editCardSubmit = popupNewCard.querySelector('.popup__button');
-
+// Форма попапа подтверждения удаления карточки
 const popupConfirmationDelete = document.querySelector('.popup_confirmation_delete')
 const formConfirmation = document.forms.confirmation;
-const buttonDelete = document.querySelector('.card__delete-button');
 const buttonDeleteConfirmation = popupConfirmationDelete.querySelector('.popup__button');
 
 
@@ -39,9 +38,14 @@ const formElementCard = document.forms['new-place'];
 const cardNameInput = formElementCard.elements['place-name'];
 const cardLinkInput = formElementCard.elements.link;
 
+// Форма попапа изменения аватарки
+const avatarPopup = document.querySelector('.popup_avatar_edit');
+const avatarForm = document.forms['edit_avatar'];
+const avatarSubmitButton = avatarForm.querySelector(".popup__button");
+
 
 const validationConfig = {
-  formSelector: '.popup__form',
+  formSelector: '.popup__form' ,
   inputSelector: '.popup__input',
   submitButtonSelector: '.popup__button',
   inactiveButtonClass: 'button_disabled',
@@ -50,32 +54,7 @@ const validationConfig = {
 }
 
 let userId
-
-
-Promise.all([ getUserProfile(), getCards() ])
-.then(( [ user, cards ]) => {
-   profileTitle.textContent = user.name
-   profileDescription.textContent = user.about
-   profileImage.style['background-image'] = `url(${user.avatar})`
-   userId = user._id;
-   cards.forEach((item) => {
-      const card = createCard( item, userId, cardCallbacks );
-      cardList.append(card);
-   })
-   
-})
-
-function renderLoading(isLoading, buttonElement) {
-  if (isLoading) {
-    buttonElement.textContent = "Сохранение...";
-    buttonElement.disabled = true;
-  } else {
-    buttonElement.textContent = "Сохранить";
-    buttonElement.disabled = false;
-  }
-}
-
-
+let cardForDelete = {}
 
 
 // Открытие попапа профиля
@@ -91,16 +70,6 @@ addImageButton.addEventListener('click', () => {
    formElementCard.reset();
    openModal(popupNewCard);
 });
-
-
-
-
-// Слушатели для всех попапов
-addPopupListener(popupEdit);
-addPopupListener(popupNewCard);
-addPopupListener(popupImage);
-addPopupListener(popupConfirmationDelete);
-
 // Открытие попапа карточки
 function handleOpenImage({ name, link }) {
    zoomImage.src = link;
@@ -108,6 +77,40 @@ function handleOpenImage({ name, link }) {
    captionImage.textContent = name;
    openModal(popupImage);
 }
+
+// Открытие попапа изменения аватарки
+profileImage.addEventListener("click", () => {
+   clearValidation(avatarPopup, validationConfig);
+   avatarForm.reset();
+   openModal(avatarPopup);
+});
+
+// Включение валидации
+enableValidation(validationConfig);
+// ------------------------------------------------------------------------
+
+// Слушатели для всех попапов
+addPopupListener(popupEdit);
+addPopupListener(popupNewCard);
+addPopupListener(popupImage);
+addPopupListener(popupConfirmationDelete);
+addPopupListener(avatarPopup);
+// ------------------------------------------------------------------------
+
+
+// Лоадер
+function renderLoading(isLoading, buttonElement) {
+  if (isLoading) {
+    buttonElement.textContent = "Сохранение...";
+    buttonElement.disabled = true;
+  } else {
+    buttonElement.textContent = "Сохранить";
+    buttonElement.disabled = false;
+  }
+}
+// ------------------------------------------------------------------------
+
+
 
 // Редактирование профиля
 function handleFormSubmit(evt) {
@@ -154,9 +157,8 @@ function handleLikeSubmit (cardID, likeButton, likeCountElement) {
       console.error(`Ошибка при изменении лайка: ${err}`);
     });
 };
-
+// ------------------------------------------------------------------------
 //Удаление карточки через модальное окно
-let cardForDelete = {}
 
 const handleDeleteCard = (cardID, cardElement) => {
   cardForDelete = {
@@ -188,15 +190,44 @@ const handleDeleteCardSubmit = (evt) => {
 };
 console.log(cardForDelete.id)
 formConfirmation.addEventListener('submit', handleDeleteCardSubmit);
+// ------------------------------------------------------------------------
 
+avatarForm.addEventListener("submit", (evt) => {
+  evt.preventDefault();
+  const avatarInput = avatarForm.querySelector(".popup__input_type_avatar");
 
-enableValidation(validationConfig);
+  renderLoading(true, avatarSubmitButton)
+  updateAvatar(avatarInput.value).then((res) => {
+      profileImage.style['background-image'] = `url(${res.avatar})`;
+      closeModal(avatarPopup);
+    })
+    .catch((err) => {
+      console.error(`Ошибка при смене аватара: ${err}`);
+      const errorElement = document.querySelector(".avatar-error");
+      errorElement.textContent = "Не удалось сменить аватар. Попробуйте снова.";
+    })
+    .finally(() => {renderLoading(false, avatarSubmitButton)})
+});
 
-
+// ------------------------------------------------------------------------
+// Промисы
+Promise.all([ getUserProfile(), getCards() ])
+.then(( [ user, cards ]) => {
+   profileTitle.textContent = user.name
+   profileDescription.textContent = user.about
+   profileImage.style['background-image'] = `url(${user.avatar})`
+   userId = user._id;
+   cards.forEach((item) => {
+      const card = createCard( item, userId, cardCallbacks );
+      cardList.append(card);
+   })
+   
+})
+// ------------------------------------------------------------------------
 // Коллбэки
 const cardCallbacks = {
    cardRemove: handleDeleteCard,
    openImage: handleOpenImage,
    cardLike: handleLikeSubmit,
 };
-
+// ------------------------------------------------------------------------

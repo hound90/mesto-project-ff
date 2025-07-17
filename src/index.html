@@ -56,6 +56,19 @@
       </form>
     </div>
   </div>
+  <div class="popup popup_avatar_edit">
+    <div class="popup__content popup__content_avatar">
+      <button type="button" class="popup__close"></button>
+      <h3 class="popup__title">Обновить аватар</h3>
+      <form class="popup__form" name="edit_avatar" novalidate>
+        <input id="avatar-link-input" type="url" name="link" class="popup__input popup__input_type_avatar" placeholder="Ссылка на картинку" required
+        pattern="https?://.+\..+"
+        data-error-message="Вставьте ссылку на изображение.">
+        <span class="avatar-link-input-error form__input-error"></span> 
+        <button type="submit" class="button popup__button">Сохранить</button>
+      </form>
+    </div>
+  </div>
   <div class="popup popup_type_new-card">
     <div class="popup__content">
       <button type="button" class="popup__close"></button>
@@ -76,10 +89,10 @@
     </div>
   </div>
   <div class="popup popup_confirmation_delete">
-    <div class="popup__content">
+    <div class="popup__content popup__content_confirmation">
       <button type="button" class="popup__close"></button>
       <h3 class="popup__title">Вы уверены?</h3>
-      <form class="popup__form" name="confirmation">
+      <form class="popup__form_confirmation_delete" name="confirmation">
         <button type="submit" class="button popup__button">Да</button>
       </form>
     </div>

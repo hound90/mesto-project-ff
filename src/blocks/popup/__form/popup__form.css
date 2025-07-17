@@ -4,3 +4,7 @@
   gap: 10px;
   margin-top: 27px;
 }
+
+.popup__form_confirmation_delete {
+  margin-top: 48px;
+}

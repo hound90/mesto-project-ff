@@ -80,3 +80,12 @@ export function deleteCard(cardID) {
     headers: headers,
   }).then(checkResponse);
 }
+
+//Изменение аватарки
+export function updateAvatar(updateAvatarLink) {
+  return fetch(`${PATH}${cohortId}/users/me/avatar`, {
+    method: "PATCH",
+    headers: headers,
+    body: JSON.stringify({ avatar: updateAvatarLink }),
+  }).then(checkResponse);
+}
