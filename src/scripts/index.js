@@ -202,9 +202,7 @@ avatarForm.addEventListener("submit", (evt) => {
       closeModal(avatarPopup);
     })
     .catch((err) => {
-      console.error(`Ошибка при смене аватара: ${err}`);
-      const errorElement = document.querySelector(".avatar-error");
-      errorElement.textContent = "Не удалось сменить аватар. Попробуйте снова.";
+      console.error(`Ошибка обновления аватара: ${err}`);
     })
     .finally(() => {renderLoading(false, avatarSubmitButton)})
 });
