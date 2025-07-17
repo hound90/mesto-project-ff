@@ -42,6 +42,7 @@ const cardLinkInput = formElementCard.elements.link;
 const avatarPopup = document.querySelector('.popup_avatar_edit');
 const avatarForm = document.forms['edit_avatar'];
 const avatarSubmitButton = avatarForm.querySelector(".popup__button");
+const avatarInput = avatarForm.querySelector(".popup__input_type_avatar");
 
 
 const validationConfig = {
@@ -122,6 +123,10 @@ function handleFormSubmit(evt) {
       profileDescription.textContent = res.about;
       closeModal(popupEdit);
    })
+   .catch((err) => {
+      console.error(`Ошибка редактирования профиля: ${err}`);
+    })
+
    .finally(() => {renderLoading(false, editProfileSubmit)})
 }
  formElement.addEventListener('submit', handleFormSubmit); 
@@ -137,6 +142,9 @@ function handleAddNewCardSubmit(evt) {
       formElementCard.reset();
       closeModal(popupNewCard);
    })
+   .catch((err) => {
+      console.error(`Ошибка добавления карточки: ${err}`);
+    })
    .finally(() => {renderLoading(false, editCardSubmit)})
    
 }
@@ -191,10 +199,9 @@ const handleDeleteCardSubmit = (evt) => {
 console.log(cardForDelete.id)
 formConfirmation.addEventListener('submit', handleDeleteCardSubmit);
 // ------------------------------------------------------------------------
-
-avatarForm.addEventListener("submit", (evt) => {
-  evt.preventDefault();
-  const avatarInput = avatarForm.querySelector(".popup__input_type_avatar");
+//Обновление аватара
+function handleUpdateAvatarSubmit (evt) {
+ evt.preventDefault();
 
   renderLoading(true, avatarSubmitButton)
   updateAvatar(avatarInput.value).then((res) => {
@@ -205,8 +212,9 @@ avatarForm.addEventListener("submit", (evt) => {
       console.error(`Ошибка обновления аватара: ${err}`);
     })
     .finally(() => {renderLoading(false, avatarSubmitButton)})
-});
+}
 
+avatarForm.addEventListener("submit", handleUpdateAvatarSubmit);
 // ------------------------------------------------------------------------
 // Промисы
 Promise.all([ getUserProfile(), getCards() ])
@@ -219,8 +227,10 @@ Promise.all([ getUserProfile(), getCards() ])
       const card = createCard( item, userId, cardCallbacks );
       cardList.append(card);
    })
-   
 })
+.catch((err) => {
+      console.error(`Ошибка получения данных: ${err}`);
+    })
 // ------------------------------------------------------------------------
 // Коллбэки
 const cardCallbacks = {
